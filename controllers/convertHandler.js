@@ -1,44 +1,37 @@
-function ConvertHandler() {
-  
-  this.getNum = function(input) {
-    let result;
-    
-    return result;
-  };
-  
-  this.getUnit = function(input) {
-    let result;
-    
-    return result;
-  };
-  
-  this.getReturnUnit = function(initUnit) {
-    let result;
-    
-    return result;
-  };
+'use strict';
 
-  this.spellOutUnit = function(unit) {
-    let result;
-    
-    return result;
-  };
-  
-  this.convert = function(initNum, initUnit) {
-    const galToL = 3.78541;
-    const lbsToKg = 0.453592;
-    const miToKm = 1.60934;
-    let result;
-    
-    return result;
-  };
-  
-  this.getString = function(initNum, initUnit, returnNum, returnUnit) {
-    let result;
-    
-    return result;
-  };
-  
-}
+const ConvertHandler = require('../controllers/convertHandler.js');
 
-module.exports = ConvertHandler;
+module.exports = function (app) {
+  
+  let convertHandler = new ConvertHandler();
+
+  app.get('/api/convert', (req, res) => {
+    const input = req.query.input;
+    const initNum = convertHandler.getNum(input);
+    const initUnit = convertHandler.getUnit(input);
+
+    if (initNum === 'invalid number' && initUnit === 'invalid unit') {
+      return res.json({ error: 'invalid number and unit' });
+    }
+    if (initNum === 'invalid number') {
+      return res.json({ error: 'invalid number' });
+    }
+    if (initUnit === 'invalid unit') {
+      return res.json({ error: 'invalid unit' });
+    }
+
+    const returnNum = convertHandler.convert(initNum, initUnit);
+    const returnUnit = convertHandler.getReturnUnit(initUnit);
+    const responseString = convertHandler.getString(initNum, initUnit, returnNum, returnUnit);
+
+    res.json({
+      initNum,
+      initUnit,
+      returnNum,
+      returnUnit,
+      string: responseString
+    });
+  });
+
+};
